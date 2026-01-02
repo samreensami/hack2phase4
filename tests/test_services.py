@@ -1,6 +1,13 @@
 import pytest
-from src.services import TaskService
-from src.models import Task
+import sys
+import os
+
+# Add backend to the Python path for imports
+backend_dir = os.path.join(os.path.dirname(__file__), '..', 'backend')
+sys.path.insert(0, backend_dir)
+
+from services import TaskService
+from models import Task
 
 @pytest.fixture
 def task_service():

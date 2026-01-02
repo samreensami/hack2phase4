@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional
-from .models import Task
+from models import Task
 
 class TaskService:
     """

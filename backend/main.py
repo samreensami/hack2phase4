@@ -1,5 +1,11 @@
 import sys
-from src.cli import run_cli
+import os
+
+# Add the backend directory to the Python path to allow imports
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, backend_dir)
+
+from cli import run_cli
 
 def main():
     """Main entry point for the application."""

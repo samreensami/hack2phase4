@@ -1,0 +1,23 @@
+# Spec-Kit Configuration
+# This configuration defines how the spec-kit should operate in this monorepo
+
+version: 1.0.0
+monorepo:
+  enabled: true
+  projects:
+    - name: backend
+      path: ./backend
+      type: python
+    - name: frontend
+      path: ./frontend
+      type: web
+
+specifications:
+  features_path: ./specs/features
+  api_path: ./specs/api
+  database_path: ./specs/database
+  ui_path: ./specs/ui
+
+ai_integration:
+  claude_enabled: true
+  context_file: ./CLAUDE.md
