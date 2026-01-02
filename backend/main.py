@@ -1,19 +1,32 @@
-import sys
-import os
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from .core.database import init_db
+from .core.config import settings
+from .routes import auth, tasks
 
-# Add the backend directory to the Python path to allow imports
-backend_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, backend_dir)
+app = FastAPI(title="Task Web App API")
 
-from cli import run_cli
+# Configure CORS
+origins = [
+    "http://localhost:3000",  # Local Next.js
+    "https://your-production-frontend.vercel.app",  # TODO: Replace with real URL
+]
 
-def main():
-    """Main entry point for the application."""
-    try:
-        run_cli()
-    except KeyboardInterrupt:
-        print("\n\nApplication interrupted by user. Exiting.")
-        sys.exit(0)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-if __name__ == "__main__":
-    main()
+@app.on_event("startup")
+def on_startup():
+    init_db()
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to Task Web App API"}
+
+app.include_router(auth.router)
+app.include_router(tasks.router)

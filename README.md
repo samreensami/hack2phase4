@@ -1,27 +1,63 @@
-# In-Memory Console App (Phase 1)
+# Task Web App (Phase 2 - Production Ready)
 
-This project implements a simple To-Do list application that operates entirely in memory, without any external database or persistent storage. It demonstrates basic CRUD (Create, Read, Update, Delete) operations through a command-line interface (CLI).
+A full-stack, production-ready To-Do list application built with a modern monorepo architecture.
 
-## Phase 1 Status: Successfully Completed
+## 🚀 Tech Stack
 
-All core functionalities for the in-memory console application have been implemented and are ready for use.
+- **Frontend**: Next.js 14+ (App Router), TypeScript, Tailwind CSS
+- **Backend**: FastAPI, Python 3.12, SQLModel (SQLAlchemy + Pydantic)
+- **Database**: Neon Serverless PostgreSQL
+- **Auth**: JWT (JSON Web Tokens) with secure password hashing
+- **Migrations**: Alembic
+- **Tooling**: Claude Code, Spec-Kit Plus
 
-## How to Run
+## ✨ Key Features
 
-To run the application, navigate to the project's root directory in your terminal and execute the following command:
+- **Secure Authentication**: User registration and login with JWT issuance.
+- **Task Management**: Full CRUD (Create, Read, Update, Delete) operations.
+- **Ownership Protection**: Users can only access and modify their own tasks.
+- **Task Categorization**: Organize tasks by labels (Work, Personal, etc.).
+- **Type Safety**: End-to-end type synchronization between backend models and frontend clients.
+- **Modern UI**: Clean, responsive interface with real-time state updates.
 
-```bash
-python main.py
+## 🛠️ Setup Instructions
+
+### Prerequisites
+- Python 3.12+
+- Node.js 18+
+- Neon DB Account (PostgreSQL)
+
+### 1. Environment Configuration
+Create a `.env` file in the root directory:
+```env
+DATABASE_URL='your-neon-db-url'
+JWT_SECRET='your-secret-key'
+JWT_ALGORITHM='HS256'
+NEXT_PUBLIC_API_URL='http://localhost:8000'
 ```
 
-This will start the To-Do list CLI, allowing you to add, view, complete, and delete tasks.
+### 2. Backend Setup
+```bash
+cd backend
+pip install -r requirements.txt # Or use uv sync
+alembic upgrade head
+uvicorn main:app --reload
+```
 
-## Project Structure
+### 3. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-- `src/models.py`: Defines the `Task` data structure.
-- `src/services.py`: Contains the in-memory business logic for task management.
-- `src/cli.py`: Implements the command-line interface for user interaction.
-- `main.py`: The entry point of the application.
-- `tests/test_services.py`: Unit tests for the `TaskService`.
-- `CONSTITUTION.md`: Outlines the project's core principles and conventions.
-- `CLAUDE.md`: Placeholder for AI integration context.
+## 📂 Project Structure
+
+- `backend/`: FastAPI application server and database models.
+- `frontend/`: Next.js web application.
+- `specs/`: Detailed technical specifications and implementation plans.
+- `history/`: Prompt History Records (PHR) for development traceability.
+- `.claude/`: Custom AI skills (api-generator).
+
+## 📄 License
+MIT
