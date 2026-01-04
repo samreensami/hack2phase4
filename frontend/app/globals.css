@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --background: #013630; /* emerald-950 equivalent */
+  --foreground: #c7f3e6; /* emerald-200/300 equivalent */
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  min-height: 100vh;
+}

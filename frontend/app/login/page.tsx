@@ -24,16 +24,16 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center p-24">
-            <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-xl shadow-md border">
-                <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">Task App - Login</h2>
+        <div className="flex min-h-screen flex-col items-center justify-center p-24 bg-emerald-950">
+            <div className="w-full max-w-md space-y-8 bg-emerald-900 p-8 rounded-3xl shadow-lg border border-emerald-800">
+                <h2 className="text-center text-4xl font-bold tracking-tight text-white">Task App - Login</h2>
                 <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-                    {error && <div className="text-red-500 text-sm text-center bg-red-50 p-2 rounded">{error}</div>}
+                    {error && <div className="text-red-400 text-sm text-center bg-red-900/30 p-2 rounded border border-red-700/50">{error}</div>}
                     <div className="rounded-md shadow-sm -space-y-px">
                         <input
                             type="email"
                             required
-                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            className="appearance-none rounded-none relative block w-full px-4 py-3 border border-emerald-700/50 placeholder-emerald-500 text-emerald-100 bg-emerald-800/50 rounded-t-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                             placeholder="Email address"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -41,20 +41,20 @@ export default function LoginPage() {
                         <input
                             type="password"
                             required
-                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            className="appearance-none rounded-none relative block w-full px-4 py-3 border border-emerald-700/50 placeholder-emerald-500 text-emerald-100 bg-emerald-800/50 rounded-b-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
                     <div>
-                        <button type="submit" className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <button type="submit" className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-2xl text-white bg-emerald-500 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                             Login
                         </button>
                     </div>
                 </form>
-                <div className="text-center text-sm">
-                    Don't have an account? <Link href="/register" className="text-blue-600 hover:underline">Register here</Link>
+                <div className="text-center text-sm text-emerald-300/80">
+                    Don't have an account? <Link href="/register" className="font-bold hover:underline text-emerald-200">Register here</Link>
                 </div>
             </div>
         </div>
