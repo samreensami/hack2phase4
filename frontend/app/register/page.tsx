@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "../../lib/api-service";
 import Link from "next/link";
+import { api } from "../../lib/api-service";
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("");
@@ -15,12 +15,33 @@ export default function RegisterPage() {
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+
         try {
-            await api.post("/auth/register", { email, password });
+            // CSRF token fetch karna zaruri hai agar backend require karta hai
+            const csrfRes = await api.get("/api/auth/csrf");
+            const csrfToken = csrfRes.data.csrfToken;
+
+            await api.post(
+                "/auth/register",
+                { email, password },
+                {
+                    headers: {
+                        "X-CSRF-Token": csrfToken,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
             setSuccess(true);
             setTimeout(() => router.push("/login"), 2000);
         } catch (err: any) {
-            setError(err.message || "Registration failed");
+            console.error(err);
+            // Axios error ka message properly show karna
+            if (err.response?.data?.detail) {
+                setError(err.response.data.detail);
+            } else {
+                setError(err.message || "Registration failed");
+            }
         }
     };
 

@@ -1,83 +1,93 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import axios, { AxiosRequestConfig } from "axios";
 
-export const getAuthToken = () => {
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
+/* =======================
+   AXIOS INSTANCE
+======================= */
+
+export const api = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true, // enable cookies for CSRF/auth flows
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+/* =======================
+   INTERCEPTORS
+======================= */
+
+// Attach token
+api.interceptors.request.use(
+  (config) => {
     if (typeof window !== "undefined") {
-        return localStorage.getItem("token");
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
-    return null;
-};
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-export const setAuthToken = (token: string) => {
-    localStorage.setItem("token", token);
-};
-
-export const clearAuthToken = () => {
-    localStorage.removeItem("token");
-};
-
-async function handleResponse(response: Response) {
-    if (!response.ok) {
-        const error = await response.json().catch(() => ({ detail: "Unknown error" }));
-        throw new Error(error.detail || response.statusText);
+// Auto logout on 401
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
     }
-    if (response.status === 204) return null;
-    return response.json();
-}
+    return Promise.reject(error);
+  }
+);
 
-export const api = {
-    async get(endpoint: string) {
-        const token = getAuthToken();
-        const headers: any = { "Content-Type": "application/json" };
-        if (token) headers["Authorization"] = `Bearer ${token}`;
+/* =======================
+   GENERIC CLIENT
+======================= */
 
-        const res = await fetch(`${API_BASE_URL}${endpoint}`, { headers });
-        return handleResponse(res);
-    },
+export const apiClient = {
+  get: async <T = any>(url: string, config?: AxiosRequestConfig) => {
+    const res = await api.get<T>(url, config);
+    return res.data;
+  },
 
-    async post(endpoint: string, body: any, useFormData: boolean = false) {
-        const token = getAuthToken();
-        const headers: any = {};
-        if (token) headers["Authorization"] = `Bearer ${token}`;
+  post: async <T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ) => {
+    const res = await api.post<T>(url, data, config);
+    return res.data;
+  },
 
-        let requestBody;
-        if (useFormData) {
-            requestBody = new URLSearchParams(body);
-            headers["Content-Type"] = "application/x-www-form-urlencoded";
-        } else {
-            requestBody = JSON.stringify(body);
-            headers["Content-Type"] = "application/json";
-        }
+  put: async <T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ) => {
+    const res = await api.put<T>(url, data, config);
+    return res.data;
+  },
 
-        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-            method: "POST",
-            headers,
-            body: requestBody,
-        });
-        return handleResponse(res);
-    },
+  delete: async <T = any>(url: string, config?: AxiosRequestConfig) => {
+    const res = await api.delete<T>(url, config);
+    return res.data;
+  },
+};
 
-    async put(endpoint: string, body: any) {
-        const token = getAuthToken();
-        const headers: any = { "Content-Type": "application/json" };
-        if (token) headers["Authorization"] = `Bearer ${token}`;
+/* =======================
+   TASK APIs
+======================= */
 
-        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-            method: "PUT",
-            headers,
-            body: JSON.stringify(body),
-        });
-        return handleResponse(res);
-    },
-
-    async delete(endpoint: string) {
-        const token = getAuthToken();
-        const headers: any = { "Content-Type": "application/json" };
-        if (token) headers["Authorization"] = `Bearer ${token}`;
-
-        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-            method: "DELETE",
-            headers,
-        });
-        return handleResponse(res);
-    },
+export const taskAPI = {
+  getTasks: () => apiClient.get("/dashboard/tasks/"),
+  createTask: (data: any) => apiClient.post("/dashboard/tasks/", data),
+  updateTask: (id: number, data: any) =>
+    apiClient.put(`/dashboard/tasks/${id}`, data),
+  deleteTask: (id: number) => apiClient.delete(`/dashboard/tasks/${id}`),
 };

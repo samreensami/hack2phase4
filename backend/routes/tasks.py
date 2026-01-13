@@ -5,13 +5,14 @@ from core.database import get_session
 from core.security import get_current_user
 from models.task import Task, TaskCreate, TaskRead
 
-router = APIRouter(prefix="/dashboard/tasks", tags=["tasks"])
+router = APIRouter(prefix="/dashboard/tasks", tags=["Tasks"])
 
+# 🟢 CREATE TASK
 @router.post("/", response_model=TaskRead, status_code=status.HTTP_201_CREATED)
 def create_task(
     task_in: TaskCreate,
+    session: Session = Depends(get_session),
     current_user_id: str = Depends(get_current_user),
-    session: Session = Depends(get_session)
 ):
     db_task = Task(**task_in.dict(), user_id=int(current_user_id))
     session.add(db_task)
@@ -19,26 +20,32 @@ def create_task(
     session.refresh(db_task)
     return db_task
 
+# 🟢 GET ALL TASKS
 @router.get("/", response_model=List[TaskRead])
 def get_tasks(
+    session: Session = Depends(get_session),
     current_user_id: str = Depends(get_current_user),
-    session: Session = Depends(get_session)
 ):
     statement = select(Task).where(Task.user_id == int(current_user_id))
     tasks = session.exec(statement).all()
     return tasks
 
+# 🟡 UPDATE TASK
 @router.put("/{task_id}", response_model=TaskRead)
 def update_task(
     task_id: int,
     task_in: TaskCreate,
+    session: Session = Depends(get_session),
     current_user_id: str = Depends(get_current_user),
-    session: Session = Depends(get_session)
 ):
-    statement = select(Task).where(Task.id == task_id, Task.user_id == int(current_user_id))
+    statement = select(Task).where(
+        Task.id == task_id,
+        Task.user_id == int(current_user_id),
+    )
     db_task = session.exec(statement).first()
+
     if not db_task:
-        raise HTTPException(status_code=404, detail="Task not found or access denied")
+        raise HTTPException(status_code=404, detail="Task not found")
 
     task_data = task_in.dict(exclude_unset=True)
     for key, value in task_data.items():
@@ -49,17 +56,21 @@ def update_task(
     session.refresh(db_task)
     return db_task
 
+# 🔴 DELETE TASK
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_task(
     task_id: int,
+    session: Session = Depends(get_session),
     current_user_id: str = Depends(get_current_user),
-    session: Session = Depends(get_session)
 ):
-    statement = select(Task).where(Task.id == task_id, Task.user_id == int(current_user_id))
+    statement = select(Task).where(
+        Task.id == task_id,
+        Task.user_id == int(current_user_id),
+    )
     db_task = session.exec(statement).first()
+
     if not db_task:
-        raise HTTPException(status_code=404, detail="Task not found or access denied")
+        raise HTTPException(status_code=404, detail="Task not found")
 
     session.delete(db_task)
     session.commit()
-    return None
