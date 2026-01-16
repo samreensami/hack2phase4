@@ -28,6 +28,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               >
                 <span>📝</span> My Tasks
               </Link>
+
+              <Link
+                href="/chat"
+                className="flex items-center gap-3 p-3 hover:bg-emerald-800/50 rounded-2xl transition-all"
+              >
+                <span>🤖</span> AI Chat
+              </Link>
             </nav>
 
             <div className="mt-auto pt-6 border-t border-emerald-800/50 space-y-2">

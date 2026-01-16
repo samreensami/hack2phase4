@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core.database import init_db
-from routes import auth, tasks, dashboard
+from routes import auth, tasks, dashboard, chat
 
 app = FastAPI(title="Task Web App API")
 
@@ -36,3 +36,4 @@ app.include_router(auth.router)
 app.include_router(auth.better_auth_router)
 app.include_router(tasks.router)
 app.include_router(dashboard.router)
+app.include_router(chat.router)

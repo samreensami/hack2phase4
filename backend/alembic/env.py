@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 from sqlmodel import SQLModel
 from core.config import settings
-from models import User, Task
+from models import User, Task, Conversation, Message
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

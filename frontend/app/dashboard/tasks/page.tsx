@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import type { TaskRead } from "../../../lib/generated/task_types";
 import { taskAPI } from "../../../lib/api-service";
@@ -11,11 +11,14 @@ export default function TasksPage() {
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
 
+  const intervalRef = useRef<NodeJS.Timeout>();
+
   useEffect(() => {
     const loadTasks = async () => {
       try {
         const data = await taskAPI.getTasks();
         setTasks(data || []);
+        setError(null);
       } catch (err: any) {
         console.error("Failed to load tasks:", err);
         if (err.response?.status === 401) {
@@ -29,13 +32,46 @@ export default function TasksPage() {
     };
 
     loadTasks();
+
+    // Poll every 10 seconds for live updates from chat/tools
+    intervalRef.current = setInterval(loadTasks, 10000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, []);
 
   if (loading) return <p className="text-emerald-200">Loading tasks...</p>;
 
+  const handleRefresh = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    setLoading(true);
+    setError(null);
+  };
+
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold">My Tasks</h2>
+      <div className="flex justify-between items-center mb-4">
+  <h2 className="text-3xl font-bold">My Tasks</h2>
+  <button
+    onClick={handleRefresh}
+    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-white font-medium flex items-center gap-2"
+    disabled={loading}
+  >
+    {loading ? (
+      <>
+        <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+        Refreshing...
+      </>
+    ) : (
+      'Refresh'
+    )}
+  </button>
+</div>
 
       {/* Quick Add Task */}
       <AddTaskForm onCreated={(t) => setTasks((prev) => [t, ...prev])} />

@@ -3,12 +3,45 @@
 @tailwind utilities;
 
 :root {
-  --background: #013630; /* emerald-950 equivalent */
-  --foreground: #c7f3e6; /* emerald-200/300 equivalent */
+  --foreground-rgb: 199, 243, 230;
+  --background-start-rgb: 2, 44, 34;
+  --background-end-rgb: 1, 54, 48;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
   min-height: 100vh;
+}
+
+@layer components {
+  .input-field {
+    @apply appearance-none rounded-2xl w-full px-4 py-3 border border-emerald-700/50 placeholder-emerald-500 text-emerald-100 bg-emerald-900/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all;
+  }
+
+  .btn-primary {
+    @apply group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-2xl text-white bg-emerald-500 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all shadow-lg shadow-emerald-900/20;
+  }
+}
+
+@layer utilities {
+  .animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+  }
+
+  @keyframes slide-in {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
 }

@@ -69,7 +69,7 @@ def test_complete_task(task_service):
     """Test marking a task as complete."""
     task = task_service.create_task("Task to Complete", "")
     completed_task = task_service.complete_task(task.id)
-    assert completed_task.completed
+    assert completed_task.status
     assert task_service.complete_task("non-existent-id") is None
 
 def test_delete_task(task_service):

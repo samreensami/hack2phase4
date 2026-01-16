@@ -20,6 +20,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const statsIntervalRef = useRef<NodeJS.Timeout>();
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -45,6 +47,9 @@ export default function DashboardPage() {
 
     fetchStats();
 
+    // Poll every 10s for live updates
+    statsIntervalRef.current = setInterval(fetchStats, 10000);
+
     // Re-fetch stats when tasks change elsewhere in the app
     const onTasksChanged = () => {
       fetchStats();
@@ -55,6 +60,9 @@ export default function DashboardPage() {
     }
 
     return () => {
+      if (statsIntervalRef.current) {
+        clearInterval(statsIntervalRef.current);
+      }
       if (typeof window !== 'undefined') {
         window.removeEventListener('tasks:changed', onTasksChanged as EventListener);
       }

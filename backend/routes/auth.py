@@ -1,13 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 from datetime import timedelta
-from ..core.database import get_session
-from ..core.security import create_access_token, get_password_hash, verify_password
-from ..models.user import User, UserCreate, UserRead
-from ..core.config import settings
+import secrets
+from core.database import get_session
+from core.security import create_access_token, get_password_hash, verify_password
+from models.user import User, UserCreate, UserRead
+from core.config import settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+better_auth_router = APIRouter(prefix="/api/auth", tags=["better-auth"])
 
 @router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 def register(user_in: UserCreate, session: Session = Depends(get_session)):
@@ -46,3 +48,16 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = D
         data={"sub": str(user.id)}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+@better_auth_router.get("/csrf")
+def get_csrf_token(response: Response):
+    token = secrets.token_urlsafe(64)
+    response.set_cookie(
+        key="better_auth.csrf",
+        value=token,
+        httponly=False,
+        secure=False,
+        samesite="lax",
+        max_age=60 * 60,
+    )
+    return {"csrfToken": token}
