@@ -4,7 +4,7 @@ from core.database import get_session
 from core.security import get_current_user
 from models.task import Task
 
-router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
+router = APIRouter(tags=["Dashboard"])
 
 @router.get("/stats")
 def get_dashboard_stats(session: Session = Depends(get_session), current_user_id: str = Depends(get_current_user)):

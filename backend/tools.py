@@ -5,6 +5,20 @@ from typing import List, Optional, Dict, Any
 # Note: In a real application, you would get the session and user_id from the request context.
 # For this implementation, we will pass them as arguments to the tool functions.
 
+
+def task_to_dict(task: Task) -> Dict[str, Any]:
+    """Convert task to JSON-serializable dict."""
+    return {
+        "id": task.id,
+        "title": task.title,
+        "description": task.description,
+        "status": "complete" if task.status else "pending",
+        "category": task.category,
+        "created_at": task.created_at.isoformat() if task.created_at else None,
+        "updated_at": task.updated_at.isoformat() if task.updated_at else None,
+    }
+
+
 def add_task(
     session: Session,
     user_id: int,
@@ -18,7 +32,7 @@ def add_task(
     session.add(db_task)
     session.commit()
     session.refresh(db_task)
-    return db_task.dict()
+    return task_to_dict(db_task)
 
 def list_tasks(
     session: Session,
@@ -35,9 +49,9 @@ def list_tasks(
             statement = statement.where(Task.status == True)
         elif status.lower() == "incomplete":
             statement = statement.where(Task.status == False)
-            
+
     tasks = session.exec(statement).all()
-    return [task.dict() for task in tasks]
+    return [task_to_dict(task) for task in tasks]
 
 def complete_task(
     session: Session, user_id: int, task_ids: List[int]

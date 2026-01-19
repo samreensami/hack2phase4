@@ -1,18 +1,25 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from core.database import init_db
 from routes import auth, tasks, dashboard, chat
 
-app = FastAPI(title="Task Web App API")
+app = FastAPI(
+    title="Task Web App API",
+    version="1.0.0"
+)
 
-# Frontend origins (Next.js running on 3000/3001/3007 during dev)
+# ==============================
+# CORS CONFIG
+# ==============================
+
 origins = [
-    "http://localhost:3007",
-    "http://127.0.0.1:3007",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:3001",
     "http://127.0.0.1:3001",
+    "http://localhost:3007",
+    "http://127.0.0.1:3007",
 ]
 
 app.add_middleware(
@@ -23,17 +30,32 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.on_event("startup")
-def on_startup():
-    init_db()
+# ==============================
+# STARTUP
+# ==============================
+
+# @app.on_event("startup")
+# def startup():
+#     init_db()
+
+# ==============================
+# ROOT CHECK
+# ==============================
 
 @app.get("/")
 def root():
-    return {"message": "Task API Running"}
+    return {
+        "status": "success",
+        "message": "Task API Running"
+    }
 
-# Routes
-app.include_router(auth.router)
-app.include_router(auth.better_auth_router)
-app.include_router(tasks.router)
-app.include_router(dashboard.router)
-app.include_router(chat.router)
+# ==============================
+# ROUTES
+# ==============================
+
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
+app.include_router(auth.better_auth_router, tags=["Better Auth"])
+
+app.include_router(tasks.router, prefix="/dashboard/tasks", tags=["Tasks"])
+app.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
+app.include_router(chat.router, prefix="/api", tags=["Chat"])

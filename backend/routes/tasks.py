@@ -5,7 +5,7 @@ from core.database import get_session
 from core.security import get_current_user
 from models.task import Task, TaskCreate, TaskRead
 
-router = APIRouter(prefix="/dashboard/tasks", tags=["Tasks"])
+router = APIRouter(tags=["Tasks"])
 
 # 🟢 CREATE TASK
 @router.post("/", response_model=TaskRead, status_code=status.HTTP_201_CREATED)

@@ -8,7 +8,7 @@ from core.security import create_access_token, get_password_hash, verify_passwor
 from models.user import User, UserCreate, UserRead
 from core.config import settings
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(tags=["auth"])
 better_auth_router = APIRouter(prefix="/api/auth", tags=["better-auth"])
 
 @router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
