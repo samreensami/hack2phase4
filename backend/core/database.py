@@ -6,7 +6,7 @@ if not settings.DATABASE_URL:
     sqlite_url = "sqlite:///./database.db"
     settings.DATABASE_URL = sqlite_url
 
-engine = create_engine(settings.DATABASE_URL)
+engine = create_engine(settings.DATABASE_URL, echo=True)
 
 def init_db():
     SQLModel.metadata.create_all(engine)

@@ -2,23 +2,16 @@ import axios, { AxiosRequestConfig } from "axios";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
-/* =======================
-   AXIOS INSTANCE
-======================= */
-
+// Axios instance
 export const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true, // enable cookies for CSRF/auth flows
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-/* =======================
-   INTERCEPTORS
-======================= */
-
-// Attach token
+// Attach token from localStorage
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== "undefined") {
@@ -32,12 +25,13 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Auto logout on 401
+// Auto logout / redirect on 401
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
       if (typeof window !== "undefined") {
+        console.log("Unauthorized, clearing token");
         localStorage.removeItem("token");
         window.location.href = "/login";
       }
@@ -46,48 +40,30 @@ api.interceptors.response.use(
   }
 );
 
-/* =======================
-   GENERIC CLIENT
-======================= */
-
+// Generic helper
 export const apiClient = {
   get: async <T = any>(url: string, config?: AxiosRequestConfig) => {
     const res = await api.get<T>(url, config);
     return res.data;
   },
-
-  post: async <T = any>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ) => {
+  post: async <T = any>(url: string, data?: any, config?: AxiosRequestConfig) => {
     const res = await api.post<T>(url, data, config);
     return res.data;
   },
-
-  put: async <T = any>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ) => {
+  put: async <T = any>(url: string, data?: any, config?: AxiosRequestConfig) => {
     const res = await api.put<T>(url, data, config);
     return res.data;
   },
-
   delete: async <T = any>(url: string, config?: AxiosRequestConfig) => {
     const res = await api.delete<T>(url, config);
     return res.data;
   },
 };
 
-/* =======================
-   TASK APIs
-======================= */
-
+// Task-specific APIs
 export const taskAPI = {
   getTasks: () => apiClient.get("/dashboard/tasks/"),
   createTask: (data: any) => apiClient.post("/dashboard/tasks/", data),
-  updateTask: (id: number, data: any) =>
-    apiClient.put(`/dashboard/tasks/${id}`, data),
+  updateTask: (id: number, data: any) => apiClient.put(`/dashboard/tasks/${id}`, data),
   deleteTask: (id: number) => apiClient.delete(`/dashboard/tasks/${id}`),
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '../../lib/api-service';
 
@@ -21,6 +21,28 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const statsIntervalRef = useRef<NodeJS.Timeout>();
+
+  const onTasksChanged = useCallback(() => {
+    const fetchHandler = async () => {
+      try {
+        const response = await api.get<Stats>('/dashboard/stats');
+        const data = response.data;
+
+        if (
+          typeof data?.tasksCompleted === 'number' &&
+          typeof data?.pendingTasks === 'number' &&
+          typeof data?.upcomingDeadlines === 'number'
+        ) {
+          setStats(data);
+        } else {
+          setStats({ tasksCompleted: 24, pendingTasks: 5, upcomingDeadlines: 3 });
+        }
+      } catch (err) {
+        console.error('Failed to fetch stats during event:', err);
+      }
+    };
+    fetchHandler();
+  }, []);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -50,13 +72,8 @@ export default function DashboardPage() {
     // Poll every 10s for live updates
     statsIntervalRef.current = setInterval(fetchStats, 10000);
 
-    // Re-fetch stats when tasks change elsewhere in the app
-    const onTasksChanged = () => {
-      fetchStats();
-    };
-
     if (typeof window !== 'undefined') {
-      window.addEventListener('tasks:changed', onTasksChanged as EventListener);
+      window.addEventListener('tasks:changed', onTasksChanged);
     }
 
     return () => {
@@ -64,7 +81,7 @@ export default function DashboardPage() {
         clearInterval(statsIntervalRef.current);
       }
       if (typeof window !== 'undefined') {
-        window.removeEventListener('tasks:changed', onTasksChanged as EventListener);
+        window.removeEventListener('tasks:changed', onTasksChanged);
       }
     };
   }, []);
