@@ -1,3 +1,20 @@
+[project]
+name = "task-web-app"
+version = "1.0.0"
+description = "Task Web App Monorepo"
+requires-python = ">=3.12"
+
 [tool.pytest.ini_options]
-pythonpath = [".", "./backend"]
-testpaths = ["tests"]
+pythonpath = [".", "backend"]
+testpaths = ["tests", "backend/tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

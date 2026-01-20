@@ -3,7 +3,7 @@ import sys
 import os
 
 # Add backend to the Python path for imports
-backend_dir = os.path.join(os.path.dirname(__file__), '..', 'backend')
+backend_dir = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, backend_dir)
 
 from services import TaskService
