@@ -1,0 +1,79 @@
+{
+  "name": "task-web-app",
+  "version": 2,
+  "public": false,
+  "buildCommand": "npm run frontend:build",
+  "outputDirectory": "frontend/.next",
+  "installCommand": "npm install",
+  "devCommand": "npm run frontend:dev",
+  "framework": "nextjs",
+  "rootDirectory": "frontend",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-Requested-With, Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://backend.up.railway.app/api/:path*",
+      "permanent": false
+    }
+  ],
+  "functions": {
+    "app/api/**/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "frontend/.next"
+      }
+    }
+  ],
+  "ignoredBuildSteps": [
+    "npm run backend:build"
+  ]
+}
