@@ -1,5 +1,4 @@
 {
-  "rootDirectory": "frontend",
   "framework": "nextjs",
   "cleanUrls": true,
   "trailingSlash": false,
