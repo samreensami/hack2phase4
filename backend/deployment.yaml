@@ -29,15 +29,24 @@ spec:
             secretKeyRef:
               name: backend-secrets
               key: OPENROUTER_API_KEY
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
 spec:
-  type: LoadBalancer
-  ports:
-  - port: 80
-    targetPort: 8000
+  type: NodePort
   selector:
     app: backend
+  ports:
+  - port: 8000
+    targetPort: 8000
+    nodePort: 30007
