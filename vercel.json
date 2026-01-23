@@ -1,13 +1,6 @@
 {
-  "name": "task-web-app",
-  "version": 2,
-  "public": false,
-  "buildCommand": "npm run frontend:build",
-  "outputDirectory": "frontend/.next",
-  "installCommand": "npm install",
-  "devCommand": "npm run frontend:dev",
-  "framework": "nextjs",
   "rootDirectory": "frontend",
+  "framework": "nextjs",
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
@@ -55,25 +48,8 @@
   "redirects": [
     {
       "source": "/api/:path*",
-      "destination": "https://backend.up.railway.app/api/:path*",
+      "destination": "http://localhost:80/api/:path*",
       "permanent": false
     }
-  ],
-  "functions": {
-    "app/api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "frontend/.next"
-      }
-    }
-  ],
-  "ignoredBuildSteps": [
-    "npm run backend:build"
   ]
 }
