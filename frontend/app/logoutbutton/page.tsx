@@ -1,22 +1,13 @@
-'use client';
-import React from 'react';
+import { Suspense } from "react";
+import LogoutButtonContent from "./LogoutButtonContent";
+
+// Force this page to be dynamic (SSR) - no static prerendering
+export const dynamic = 'force-dynamic';
 
 export default function LogoutButton() {
-  const handleLogout = () => {
-    console.log('Logout clicked');
-    // Add your logout logic here
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
-    }
-  };
-
   return (
-    <button
-      onClick={handleLogout}
-      className="w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 transition"
-    >
-      🚪 Logout
-    </button>
+    <Suspense fallback={<div>Logging out...</div>}>
+      <LogoutButtonContent />
+    </Suspense>
   );
 }
