@@ -25,11 +25,11 @@ def startup():
 def root():
     return {"status": "success", "message": "Task API Running"}
 
-# ROUTES - Frontend ki requests se match karne ke liye /api prefix laazmi hai
-app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
-app.include_router(tasks.router, prefix="/api/dashboard/tasks", tags=["Tasks"])
-app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 
-# Chatbot ke liye ye dono prefixes zaroori hain
-app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
-app.include_router(chat.router, prefix="/api/conversations", tags=["Conversations"])
+
+# main.py ke routes ko exactly aise replace karein
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
+app.include_router(tasks.router, prefix="/dashboard/tasks", tags=["Tasks"])
+app.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
+app.include_router(chat.router, prefix="/chat", tags=["Chat"])
+app.include_router(chat.router, prefix="/conversations", tags=["Conversations"])
