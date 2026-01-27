@@ -12,15 +12,17 @@ async function getInitialStats() {
   }
 
   try {
-    // Import here to avoid bundling issues during build
-    const { api } = await import('../../lib/api-service');
+    // FIX: api-service default export hai, is liye .default use karna hoga
+    const apiModule = await import('../../lib/api-service');
+    const api = apiModule.default;
 
     // During build, return fallback data
     if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
       return { tasksCompleted: 0, pendingTasks: 0, upcomingDeadlines: 0 };
     }
 
-    const response = await api.get('/dashboard/stats');
+    // FIX: Route ko /api/ ke sath update kiya
+    const response = await api.get('/api/dashboard/stats');
     const data = response.data;
 
     if (
@@ -43,8 +45,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold">Dashboard</h2>
-
+      {/* FIX: Yahan se Dashboard heading delete kar di taake double na ho */}
+      
       <Suspense fallback={
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="p-6 bg-emerald-800/50 rounded-2xl shadow-lg">
